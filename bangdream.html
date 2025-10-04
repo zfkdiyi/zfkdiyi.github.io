@@ -328,8 +328,8 @@
       </div>
     </div>
     <div class="version-info">
-      <div><span data-text="version">版本</span>：0.1</div>
-      <div><span data-text="updateTime">更新时间</span>：2025-10-04</div>
+      <div><span data-text="version">版本</span>：0.2</div>
+      <div><span data-text="updateTime">更新时间</span>：2025-10-05</div>
       <div>
         <a href="https://github.com/zfkdiyi/bangdream" id="github-button" class="github-btn">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -814,7 +814,7 @@
         ctx.fill();
 
         if (this.flashTimer > 0) {
-          ctx.filter = 'brightness(300%) saturate(0%)';
+          ctx.filter = 'brightness(160%) saturate(0%)';
         }
         const currentImage = Math.floor(this.animFrame / 30) % 2 === 0 ? assetImages.bear1 : assetImages.bear2;
         ctx.drawImage(currentImage, this.x, this.y, this.width, this.height);
@@ -919,7 +919,7 @@
 
         // 受击时的闪光效果
         if (bossFlashTimer > 0 && this.health > 0) {
-          ctx.filter = 'brightness(300%) saturate(0%)';
+          ctx.filter = 'brightness(120%) saturate(0%)';
         }
 
         // 根据攻击状态选择图片
