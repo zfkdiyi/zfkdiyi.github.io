@@ -583,8 +583,8 @@
       // 更新BOSS状态和位置
       update() {
         this.animFrame++;
-        // 血量低于50%时进入第二阶段
-        if (this.health <= this.maxHealth / 2 && this.phase === 1) this.phase = 2;
+        // 血量低于75%时进入第二阶段
+        if (this.health <= this.maxHealth * 0.75 && this.phase === 1) this.phase = 2;
 
         if (this.phase === 1) {
           // 第一阶段：先下降到目标位置，然后左右移动
@@ -865,7 +865,7 @@
         };
         if (isColliding(boss, playerHitbox)) {
           playerInvulnerable = true;  // 设置无敌状态
-          invulnerabilityTimer = 60;  // 1秒无敌时间（60帧）
+          invulnerabilityTimer = 90;  // 1.5秒无敌时间（90帧）
           triggerScreenShake(8);  // 屏幕震动
           checkDead();
         }
