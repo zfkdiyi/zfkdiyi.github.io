@@ -151,6 +151,7 @@
       pointer-events: none;
     }
 
+    .contact-btn,
     .lang-btn {
       padding: 8px 12px;
       font-size: 0.9rem;
@@ -162,6 +163,7 @@
       transition: all 0.2s;
     }
 
+    .contact-btn:hover,
     .lang-btn:hover {
       background-color: rgba(255, 105, 180, 0.3);
     }
@@ -171,13 +173,16 @@
       background-color: rgba(255, 105, 180, 0.5);
     }
     .version-info{
-      margin-top: 50px;
+      margin-top: 40px;
       font-size: 1rem;
       color: rgba(255,255,255,0.7);
       text-align: center;
       line-height: 1.8;
       @media (max-width: 500px) {
         margin-top: 30px;
+      }
+      @media (max-width: 400px) {
+        margin-top: 25px;
       }
     }
     .github-btn {
@@ -196,23 +201,99 @@
     .github-btn:hover {
       color: #ff69b4;
     }
+
+    #fps-display {
+      position:absolute;
+      bottom:5px;
+      left:5px;
+      color:#0f0;
+      font-family:monospace;
+      font-size:16px;
+      font-weight:bold;
+      text-shadow:0 0 3px #000;
+      z-index:20;
+    }
+    /* 联系作者部分 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 400px;
+      text-align: left;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    .modal-content textarea {
+      width: 100%;
+      height: 100px;
+      margin: 10px 0;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: none;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+    }
+    .modal-actions {
+      text-align: right;
+    }
+
+    .modal-actions button {
+      margin-left: 10px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      background-color: #4caf50;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .modal-actions button:hover {
+      background-color: #45a049;
+    }
+
+    .modal-actions button#cancel-btn {
+      background-color: #aaa;
+    }
+
+    .modal-actions button#cancel-btn:hover {
+      background-color: #888;
+    }
+
+    .close {
+      float: right;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
 <div id="game-container">
   <canvas id="game-canvas"></canvas>
-  <div id="fps-display" style="
-  position:absolute;
-  bottom:5px;
-  left:5px;
-  color:#0f0;
-  font-family:monospace;
-  font-size:16px;
-  font-weight:bold;
-  text-shadow:0 0 3px #000;
-  z-index:20;
-">FPS: 0</div>
+  <div id="fps-display">FPS: 0</div>
 
   <div id="start-screen" class="game-overlay start-adjust" >
     <img src="https://anime.bang-dream.com/bandorichan/wordpress/wp-content/uploads/2025/09/25171503/2025_BGDC_header_01-1024x341.jpg" alt="Header" style="width: 100%; position: absolute; top: 0; left: 0; z-index: -1;">
@@ -224,6 +305,19 @@
         <button class="lang-btn" data-lang="zh">中文</button>
         <button class="lang-btn" data-lang="en">English</button>
         <button class="lang-btn" data-lang="ja">日本語</button>
+        <button class="contact-btn" data-text="contact" id="contact-btn" >联系作者</button>
+      </div>
+    </div>
+    <div id="contact-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3 data-text="contact">联系作者</h3>
+        <textarea id="contact-text" data-placeholder="contactHolder" placeholder="请输入内容（不超过100字 如果你希望收到作者回复，记得留下邮箱地址）"
+                  maxlength="100"></textarea>
+        <div class="modal-actions">
+          <button id="send-btn" data-text="submit">提交</button>
+          <button id="cancel-btn" data-text="close">关闭</button>
+        </div>
       </div>
     </div>
     <div class="version-info">
@@ -280,7 +374,11 @@
         lives: '生命数',
         score: '积分',
         version: '版本',
-        updateTime: '更新时间'
+        updateTime: '更新时间',
+        contact: '联系作者',
+        submit: '提交',
+        close: '关闭',
+        contactHolder: '请输入内容（不超过100字 如果你希望收到作者回复，记得留下邮箱地址）'
       },
       en: {
         title: 'GANSO! BanG Dream Chan<br>Note Shooter',
@@ -294,7 +392,11 @@
         lives: 'Lives',
         score: 'Score',
         version: 'Version',
-        updateTime: 'Updated'
+        updateTime: 'Update time',
+        contact: 'Contact Me',
+        submit: 'Submit',
+        close: 'Close',
+        contactHolder: "Please enter your message (up to 100 characters). If you’d like a reply, don’t forget to leave your email address."
       },
       ja: {
         title: '「元祖！バンドリちゃん」<br>ノートシューター',
@@ -308,7 +410,12 @@
         lives: 'ライフ',
         score: 'ポイント',
         version: 'バージョン',
-        updateTime: '更新日時'
+        updateTime: '更新日時',
+        contact: 'お問い合わせ',
+        submit: '送信',
+        close: '閉じる',
+        contactHolder: "内容を入力してください（100文字以内）。返信をご希望の方は、メールアドレスを忘れずにご記入ください。"
+
       }
     };
 
@@ -338,7 +445,13 @@
           element.innerHTML = texts[key];
         }
       });
-
+      // 更新所有 data-placeholder 的元素（placeholder 属性）
+      document.querySelectorAll('[data-placeholder]').forEach(element => {
+        const key = element.getAttribute('data-placeholder');
+        if (texts[key]) {
+          element.setAttribute('placeholder', texts[key]);
+        }
+      });
       // 更新页面标题
       document.title = texts.title.replace('<br>',' ');
 
@@ -347,21 +460,62 @@
         btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
       });
     }
-
     // 初始化语言
     currentLang = detectLanguage();
-
     // 语言按钮事件监听
     document.addEventListener('DOMContentLoaded', () => {
       updateLanguage(currentLang);
-
       document.querySelectorAll('.lang-btn').forEach(btn => {
-          const changeLang = () => updateLanguage(btn.getAttribute('data-lang'));
-          btn.addEventListener('click', changeLang);
-          //同时绑定 touchstart 解决移动端click事件失效的问题
-          btn.addEventListener('touchstart', changeLang);
+        const changeLang = () => updateLanguage(btn.getAttribute('data-lang'));
+        btn.addEventListener('click', changeLang);
       });
     });
+
+    // 联系作者弹窗逻辑
+    const contactBtn = document.getElementById('contact-btn');
+    const modal = document.getElementById('contact-modal');
+    const closeBtn = modal.querySelector('.close');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const sendBtn = document.getElementById('send-btn');
+    const textarea = document.getElementById('contact-text');
+
+    contactBtn.onclick = () => {
+      modal.style.display = 'flex';
+    };
+
+    closeBtn.onclick = cancelBtn.onclick = () => {
+      modal.style.display = 'none';
+      textarea.value = '';
+    };
+
+    sendBtn.onclick = async () => {
+      const text = textarea.value.trim();
+      if (!text) {
+        alert('请输入内容');
+        return;
+      }
+      try {
+        const response = await fetch('https://badmintonranks.com/prod-api/bilibiliContact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: text
+        });
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        const data = await response.json();
+        if (data.code == 427) {
+          alert('请勿频繁提交');
+          return;
+        }
+        alert('已成功提交！');
+        modal.style.display = 'none';
+        textarea.value = '';
+      } catch (error) {
+        console.error(error);
+        alert('提交失败，请稍后重试');
+      }
+    };
     // 获取画布和容器元素
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
@@ -1115,6 +1269,9 @@
 
     // 触摸移动事件：控制玩家位置
     container.addEventListener('touchmove', e => {
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') {
+        return; // 不拦截输入框
+      }
       e.preventDefault();
       if (!player || gameState !== 'playing') return;
       const pos = getTouchPos(e);
@@ -1125,6 +1282,9 @@
 
     // 触摸开始事件：设置位置并开始持续射击
     container.addEventListener('touchstart', e => {
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') {
+        return; // 不拦截输入框
+      }
       e.preventDefault();
       if (player && gameState === 'playing') {
         const pos = getTouchPos(e);
@@ -1138,6 +1298,9 @@
 
     // 触摸结束事件：停止射击
     container.addEventListener('touchend', e => {
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') {
+        return; // 不拦截输入框
+      }
       e.preventDefault();
       isShooting = false;
       shootTimer = 0;
@@ -1145,42 +1308,45 @@
 
     // 触摸取消事件：停止射击
     container.addEventListener('touchcancel', e => {
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') {
+        return; // 不拦截输入框
+      }
       e.preventDefault();
       isShooting = false;
       shootTimer = 0;
     }, {passive: false});
 
     // 按钮事件监听器 - 支持移动端触摸
+    // function addButtonListeners(button, handler) {
+    //   let touchHandled = false;
+    //
+    //   button.addEventListener('touchstart', (e) => {
+    //     e.preventDefault();
+    //     touchHandled = true;
+    //     handler();
+    //   }, {passive: false});
+    //
+    //   button.addEventListener('click', (e) => {
+    //     if (touchHandled) {
+    //       touchHandled = false;
+    //       return;
+    //     }
+    //     handler();
+    //   });
+    // }
+
+    // 按钮事件监听器
     function addButtonListeners(button, handler) {
-      let touchHandled = false;
-
-      button.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        touchHandled = true;
-        handler();
-      }, {passive: false});
-
       button.addEventListener('click', (e) => {
-        if (touchHandled) {
-          touchHandled = false;
-          return;
-        }
         handler();
       });
     }
-
-
 
     addButtonListeners(startButton, startGame);  // 开始游戏按钮
     addButtonListeners(restartButtonDefeat, startGame);  // 失败重试按钮
     addButtonListeners(restartButtonWin, startGame);  // 胜利重玩按钮
     addButtonListeners(homeButtonDefeat, backToHome);  // 失败回到首页按钮
     addButtonListeners(homeButtonWin, backToHome);  // 胜利回到首页按钮
-    addButtonListeners(githubButton, openGithub);
-
-    function openGithub() {
-      document.getElementById('github-button').click();
-    }
 
     // 屏幕震动效果函数
     function triggerScreenShake(intensity) {
