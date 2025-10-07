@@ -787,7 +787,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       currentLang = detectLanguage();
       updateLanguage(currentLang);
-      createMusic();
       initMusicControl();
       // 语言切换按钮监听
       document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -983,6 +982,7 @@
     const assetImages = {};  // 存储加载后的图像对象
     // 加载游戏资源
     function loadAssets(callback) {
+      createMusic();
       let loadedCount = 0;
       const assetKeys = Object.keys(assets);
       assetKeys.forEach(key => {
