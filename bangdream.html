@@ -448,7 +448,15 @@
   </div>
 
   <!-- 背景音乐 -->
-  <div id="audio-container"></div>
+  <audio id="menu-music" loop preload="auto">
+    <source src="https://cdn.badmintonranks.com/menu.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="battle-music" loop preload="auto">
+    <source src="https://cdn.badmintonranks.com/battle1.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="end-music" loop preload="auto">
+    <source src="https://cdn.badmintonranks.com/end.mp3" type="audio/mpeg">
+  </audio>
 
   <div id="start-screen" class="game-overlay start-adjust">
     <img
@@ -661,36 +669,6 @@
     let menuMusic, battleMusic, endMusic;
     let currentMusic = null;
     let isMusicEnabled = false;
-    // 公共前缀
-    const audioPrefix = "https://cdn.jsdelivr.net/gh/zfkdiyi/bangdream/img/";
-    // 音乐文件名数组
-    const musicFiles = [
-      { id: "menu-music", file: "menu.mp3", loop: true },
-      { id: "battle-music", file: "battle1.mp3", loop: true },
-      { id: "end-music", file: "end.mp3", loop: true }
-    ];
-
-    function createMusic() {
-      // 遍历生成 <audio> 标签
-      const audioContainer = document.getElementById("audio-container");
-      musicFiles.forEach(music => {
-        const audio = document.createElement("audio");
-        audio.id = music.id;
-        audio.loop = music.loop;
-        // auto表示浏览器尽可能地提前加载整个音频文件，以便用户一点击播放就能立即开始。
-        // none表示浏览器不下载音频，除非用户点击播放。延迟大
-        audio.preload = "auto";
-
-        const source = document.createElement("source");
-        source.src = `${audioPrefix}${music.file}`;
-        source.type = "audio/mpeg";
-
-        audio.appendChild(source);
-        audioContainer.appendChild(audio);
-        initMusicControl();
-      });
-    }
-
     // 播放指定音乐
     const playMusic = (musicType) => {
       // 停止所有音乐
@@ -967,7 +945,6 @@
 
     // 加载游戏资源
     function loadAssets(callback) {
-      createMusic();
       let loadedCount = 0;
       const assetKeys = Object.keys(assets);
       assetKeys.forEach(key => {
@@ -2129,6 +2106,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       // 初始化语言
       setLanguage();
+      initMusicControl();
       // 图片资源
       loadAssets();
       // 画布尺寸
