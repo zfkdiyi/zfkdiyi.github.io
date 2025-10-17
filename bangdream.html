@@ -1051,7 +1051,7 @@
     let bearProbability = 0;  // 小熊生成概率
     let bossBegan = 0; // BOSS在游戏开始多久后出现
     let maxPlayerCharacter = 5;  // 第一关玩家角色数量最大值
-    let killCount = 0;  // 小熊击杀数
+    let bearKillCount = 0;  // 小熊击杀数
     let killsSinceLastLife = 0;  // 自上次获得生命以来的击杀数
     let comboCount = 0;  // 连击数
     let maxComboCount = 0;  // 最大连击数
@@ -1602,7 +1602,7 @@
           this.bulletRows = 1;
         } else if (currentDifficulty === 'normal' || currentDifficulty === 'endless') {
           if (currentLevel === 2) {
-            bossHealth = 8200;
+            bossHealth = 9000;
           }else{
             bossHealth = 1400;
           }
@@ -1613,7 +1613,7 @@
           this.bulletRows = 1;
         } else if (currentDifficulty === 'hard') {
           if (currentLevel === 2) {
-            bossHealth = 12000;
+            bossHealth = 13500;
           }else{
             bossHealth = 2800;
           }
@@ -1682,12 +1682,13 @@
           }
         }
         if (currentLevel === 2) {
-          // 第2关BOSS达到一定血量以下 进入游走阶段
-          if ((this.health <= this.maxHealth * this.bloodFactor) && this.phase === 1) {
-            this.phase = 2; // 进入游走阶段
+          // 第2关BOSS达到一定血量以下,或无限模式下游戏时间超过15秒  进入阶段2
+          if ((this.health <= this.maxHealth * this.bloodFactor || (currentDifficulty === 'endless' && gameTime > 20000))
+            && this.phase === 1) {
+            this.phase = 2;
           }
           if (this.phase === 1) {
-            // 阶段1：正常左右移动
+            // 阶段1：左右游走
             if (this.y < this.targetY) this.y += this.speedy * deltaSeconds;
             else {
               this.x += this.speedx * this.directionX * deltaSeconds;
@@ -1701,7 +1702,7 @@
               }
             }
           } else {
-            // 阶段2：游走模式
+            // 阶段2：下降+游走
             // 检查是否在游走状态
             const isRoaming = this.roamTimer > 0 && this.roamTimer < this.roamDuration;
 
@@ -2016,7 +2017,7 @@
       explosions = [];  // 清空爆炸数组
       flashEffects = [];  // 清空闪光效果数组
       boss = null;  // 重置BOSS
-      killCount = 0;  // 重置小熊击杀数
+      bearKillCount = 0;  // 重置小熊击杀数
       killsSinceLastLife = 0;  // 重置回血计数器
       comboCount = 0;  // 重置连击数
       maxComboCount = 0;  // 重置最大连击数
@@ -2179,7 +2180,7 @@
             }
             if (bear.health <= 0) {
               bear.markedForDeletion = true; // 标记小熊待删除
-              killCount++;
+              bearKillCount++;
               killsSinceLastLife++;
               comboCount++;
               if (comboCount > maxComboCount) maxComboCount = comboCount;
@@ -2625,7 +2626,7 @@
 
         ctx.textAlign = 'right';
         // 显示格式：击杀数-逃走数（如果有逃走小熊）
-        const scoreText = escapedBearCount > 0 ? `${killCount}-${escapedBearCount}` : killCount.toString();
+        const scoreText = escapedBearCount > 0 ? `${bearKillCount}-${escapedBearCount}` : bearKillCount.toString();
         ctx.strokeText(scoreText, canvasWidth - 55, 62);
         ctx.fillText(scoreText, canvasWidth - 55, 62);
 
@@ -2690,26 +2691,27 @@
       // document.getElementById('game-music-control').style.display = 'none';
 
       // 计算最终得分
-      const killScore = Math.max(0, (killCount - escapedBearCount) * 20);
+      const killScore = Math.max(0, (bearKillCount - escapedBearCount) * 20);
       const comboScore = maxComboCount * 20;
-      const deathPenalty = deathCount * 50;
-      const fullComboScore = (isWin && (maxComboCount == killCount)) ? maxComboCount * 10 : 1;
+      const deathPenalty = currentDifficulty === 'endless' ? deathCount * 10 : deathCount * 50;
+      const fullComboScore = (isWin && (maxComboCount == bearKillCount)) ? maxComboCount * 10 : 1;
       const bossScore = boss ? (boss.maxHealth - boss.health) * 5 : 0;
-      const bearRatio = killCount > 0 ? killCount / (killCount + escapedBearCount) : 0;
+      const bearRatio = bearKillCount > 0 ? bearKillCount / (bearKillCount + escapedBearCount) : 0;
       const bossRatio = boss ? (boss.maxHealth - boss.health) / boss.maxHealth : 0;
       const playerRatio = currentLevel == 1 ? (player.characterCount / maxPlayerCharacter) : (playerBulletStreams / maxPlayerBulletStreams);
-      const playerRatioScore = isWin ? playerRatio * 50 : playerRatio * 2;
+      const playerRatioScore = isWin ? playerRatio * 50 : playerRatio * 4;
       const bulletRatio = destroyedBulletCount > 0 ? destroyedBulletCount / (destroyedBulletCount + escapedBulletCount) : 0;
       const bulletRatioScore = isWin ? bulletRatio * 1000 : bulletRatio * 20;
       const itemRatio = collectedItemCount > 0 ? collectedItemCount / (collectedItemCount + escapedItemCount) : 0;
       const itemRatioScore = isWin ? itemRatio * 1000 : itemRatio * 5;
-      const resultRank = getResultRank(bearRatio, bossRatio, deathCount);
+      const gameSeconds = Math.floor(gameTime / 1000);
+      const timeScore = ((currentDifficulty === 'endless' && gameSeconds > 60) ? (gameSeconds - 60) * 50 : gameSeconds);
+      const resultRank = getResultRank(bearRatio, bossRatio, deathCount, gameSeconds);
       const finalScore = Math.floor(Math.max(0, killScore + bossScore + comboScore - deathPenalty + fullComboScore
-        + playerRatioScore + bulletRatioScore + itemRatioScore));
+        + playerRatioScore + bulletRatioScore + itemRatioScore + timeScore));
       //发送游戏统计
       try {
-        gameStat(currentLevel, currentDifficulty, fps, isWin ? 1 : 0, resultRank.replace('rank_', ''), Math.floor(gameTime / 1000),
-          killCount, escapedBearCount, maxComboCount, (currentLevel === 2 ? playerHealth : player.characterCount),
+        gameStat(currentLevel, currentDifficulty, fps, isWin ? 1 : 0, resultRank, gameSeconds, bearKillCount, escapedBearCount, maxComboCount, (currentLevel === 2 ? playerHealth : player.characterCount),
           deathCount, roundTo2(bossRatio), roundTo2(bulletRatio), roundTo2(itemRatio), finalScore);
       } catch (e) {
         //忽略报错
@@ -2788,7 +2790,7 @@
                 let rankImg = document.getElementById('result-rank');
                 // 给HTML图片赋值src（结算界面的图片在showScoreAnimation中动态设置）
                 rankImg.style.display = 'block';
-                rankImg.src = IMG_PATH + assets[resultRank];
+                rankImg.src = IMG_PATH + assets['rank_' + resultRank];
               }
             });
           });
@@ -2796,48 +2798,72 @@
       }, 100);
     }
 
-    function getResultRank(bearRatio, bossRatio, deathCount) {
+    function getResultRank(bearRatio, bossRatio, deathCount, gameSeconds) {
       if(currentDifficulty === 'endless') {
-        return null;
+        if(gameSeconds < 30){
+          return "d";
+        }else if(gameSeconds < 60){
+          return "c";
+        }else if(gameSeconds < 90){
+          return "cp";
+        }else if(gameSeconds < 120){
+          return "b";
+        }else if(gameSeconds < 180){
+          return "bp";
+        }else if(gameSeconds < 240){
+          return "a";
+        }else if(gameSeconds < 300){
+          return "ap";
+        }else if(gameSeconds < 450){
+          return "s";
+        }else if(gameSeconds < 600){
+          return "sp";
+        }else if(gameSeconds < 900){
+          return "ss";
+        }else if(gameSeconds < 1800){
+          return "ssp";
+        }else {
+          return "sss";
+        }
       }
       let rank = '';
       if(bossRatio <= 0.1){
-        rank = 'rank_d';
+        rank = 'd';
       }else if (bossRatio <= 0.4){
-        rank = 'rank_c'
+        rank = 'c';
       }else if (bossRatio <= 0.6){
-        rank = 'rank_cp'
+        rank = 'cp';
       }else if (bossRatio <= 0.8){
-        rank = 'rank_b'
+        rank = 'b';
       }else if (bossRatio < 1){
-        rank = 'rank_bp'
+        rank = 'bp'
       }else{
-        if(bearRatio <= 0.7){
-          rank = 'rank_a'
-        }else if(bearRatio <= 0.9){
-          rank = 'rank_ap'
+        if(bearRatio <= 0.6){
+          rank = 'a';
+        }else if(bearRatio <= 0.8){
+          rank = 'ap';
         }else if(bearRatio < 1){
-          rank = 'rank_s'
+          rank = 's';
         }else{
           if(currentLevel === 1) {
             if (deathCount >= 9) {
-              rank = 'rank_sp'
+              rank = 'sp';
             }else if (deathCount >= 6) {
-              rank = 'rank_ss'
+              rank = 'ss';
             } else if (deathCount >= 3) {
-              rank = 'rank_ssp'
+              rank = 'ssp';
             } else {
-              rank = 'rank_sss'
+              rank = 'sss';
             }
           }else {
             if (deathCount >= 8) {
-              rank = 'rank_sp'
+              rank = 'sp';
             }else if (deathCount >= 4) {
-              rank = 'rank_ss'
+              rank = 'ss';
             } else if (deathCount >= 1) {
-              rank = 'rank_ssp'
+              rank = 'ssp';
             } else {
-              rank = 'rank_sss'
+              rank = 'sss';
             }
           }
         }
