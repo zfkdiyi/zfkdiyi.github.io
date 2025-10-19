@@ -369,6 +369,15 @@
       overflow-y: auto;
     }
 
+    .leaderboard-desc {
+      font-size: 14px;
+      margin: 0 8px;
+      @media (max-width: 450px) {
+        font-size: 12px;
+        margin: 0 4px;
+      }
+    }
+
     .leaderboard-filters {
       display: flex;
       gap: 12px;
@@ -796,8 +805,8 @@
     <div id="leaderboard" class="modal">
       <div class="leaderboard-content leaderboard-modal">
         <span class="close" id="leaderboard-close">&times;</span>
-        <h3 data-text="leaderboard">排行榜</h3>
-
+        <span style="font-size: 20px; font-weight: bold" data-text="leaderboard">排行榜</span>
+        <span class="leaderboard-desc" data-text="leaderboard-desc">3分钟更新一次，时间15秒以下不收录</span>
         <div class="leaderboard-filters">
           <select id="lb-level">
             <option value="1" data-text="level1">第1关</option>
@@ -910,6 +919,7 @@
         scoreOrder: '积分顺序',
         rankOrder: '级别顺序',
         leaderboard: '排行榜',
+        'leaderboard-desc': '3分钟更新一次，游戏时长15秒以下不收录',
         noData: '暂无排行数据',
         loadError: '加载失败，请稍后重试',
         myPosition: '我的位置',
@@ -950,6 +960,7 @@
         scoreOrder: 'By Score',
         rankOrder: 'By Level',
         leaderboard: 'Score Ranking',
+        'leaderboard-desc': 'Updated every 3 minutes, games under 15 seconds not recorded',
         noData: 'No leaderboard data',
         loadError: 'Failed to load, please try again later',
         myPosition: 'My Rank',
@@ -990,6 +1001,7 @@
         scoreOrder: 'スコア順',
         rankOrder: 'レベル順',
         leaderboard: 'ランキング',
+        'leaderboard-desc': '3分毎に更新 (15秒未満の記録は除外)',
         noData: 'ランキングデータがありません',
         loadError: '読み込みに失敗しました。しばらくしてからもう一度お試しください',
         myPosition: '自分の順位',
@@ -1368,7 +1380,7 @@
           <div class="leaderboard-item${highlightClass}"">
             <div class="leaderboard-rank ${rankClass}">${rank}</div>
             <div class="leaderboard-info">
-              <div class="leaderboard-name">${displayName}  <span style="font-size: 12px;
+              <div class="leaderboard-name">${displayName}   <span style="font-size: 12px;
       color: rgba(255, 255, 255, 0.8);">${createTime}</span></div>
               <div class="leaderboard-details">
                 <span>${texts.maxCombo}: ${item.max_combo}</span>
