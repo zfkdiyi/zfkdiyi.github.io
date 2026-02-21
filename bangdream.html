@@ -2460,7 +2460,7 @@
           if (healthPercent <= 0.2 && !this.hasShield) {
             this.hasShield = true;
             // 增加创可贴出现概率
-            protectProbability *= 2.4 + 0.25 * currentLevel;
+            protectProbability *= 2 + 0.25 * currentLevel;
             if(currentDifficulty === 'easy'){
               this.defence = 8;
             }else if (currentDifficulty === 'normal') {
@@ -3513,12 +3513,12 @@
                 if(percent <= 0.25){
                   factor = 2;
                 }
-                // BOSS血量在0.5以下，创可贴给所有5、6、7以外的角色提供3.6秒防护罩。所有角色加2点攻击力
+                // BOSS血量在0.5以下，创可贴给所有5、6、7以外的角色提供3.6秒防护罩。所有角色加1点攻击力
                 if (player.currentCharacterType !== 5 && player.currentCharacterType !== 6 && player.currentCharacterType !== 7) {
                   playerShield = true;
-                  shieldTimer = (1800 + 250 * currentLevel) * factor;
+                  shieldTimer = (1500 + 250 * currentLevel) * factor;
                 }
-                let addPower = (1 + 0.25 * currentLevel) * factor;
+                let addPower = (0.5 + 0.25 * currentLevel) * factor;
                 changePlayerAttack(addPower);
               }
               // 触发增益特效
