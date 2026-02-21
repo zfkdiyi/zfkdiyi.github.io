@@ -3347,11 +3347,13 @@
           };
 
           if (isColliding(bear, charHitbox)) {
-            bear.markedForDeletion = true;
-            // 撞到玩家的小熊视为幸存 combo中断
-            escapedBearCount++;
-            comboCount = 0;
-            playerBulletStreams = Math.ceil(playerBulletStreams / 2);
+            // 带防护罩的小熊碰到玩家不消失，只有被击杀才消失
+            if (!bear.hasShield) {
+              bear.markedForDeletion = true;
+              // 撞到玩家的小熊视为幸存 combo中断
+              escapedBearCount++;
+              comboCount = 0;
+            }
             triggerScreenShake(5);
             flashEffects.push(new FlashEffect(charHitbox.x, charHitbox.y, true));
             player.flashTimer = 200; //玩家闪白200毫秒
@@ -3376,7 +3378,6 @@
             playerInvulnerable = true;
             // 玩家无敌时间0.8秒，避免重复受到伤害
             invulnerabilityTimer = 800;
-            playerBulletStreams = Math.ceil(playerBulletStreams / 2);
             player.flashTimer = 200; //玩家闪白200毫秒
             triggerScreenShake(8);
             flashEffects.push(new FlashEffect(playerHitbox.x, playerHitbox.y, true));
@@ -3431,7 +3432,6 @@
             escapedBulletCount++;
             playerInvulnerable = true;
             invulnerabilityTimer = 500;
-            playerBulletStreams = Math.ceil(playerBulletStreams / 2);
             player.flashTimer = 100; //玩家闪白100毫秒
             triggerScreenShake(5);
             flashEffects.push(new FlashEffect(playerHitbox.x, playerHitbox.y, true));
@@ -3486,7 +3486,9 @@
           if (isColliding(item, playerHitbox, 2)) {
             const charNum = item.getCharacterNum();
             // item3和item6-3在有保护罩时直接无视
-            if (playerShield && ((item.itemNum === 3) || (item.itemNum === 6 && item.variant === 3))) {
+            if (playerShield && (
+              (item.itemNum === 3 && player.currentCharacterType != 3) ||
+              (item.itemNum === 6 && item.variant === 3  && player.currentCharacterType != 6))) {
               return;
             }
             item.markedForDeletion = true;
@@ -3544,7 +3546,6 @@
                   stunTimer = 0;
                 }
                 playerStoned = true;
-                playerBulletStreams = Math.ceil(playerBulletStreams / 2);
                 stoneTimer = 1500;
                 triggerScreenShake(5);
                 flashEffects.push(new FlashEffect(playerHitbox.x, playerHitbox.y, true));
@@ -3617,7 +3618,8 @@
 
     function checkDead(hitCharacterIndex) {
       if (currentLevel > 1) {
-        // 第2关死亡一次：减少血量、攻击力减3
+        // 第2关死亡一次：减少血量、攻击力减3、子弹束减半
+        playerBulletStreams = Math.ceil(playerBulletStreams / 2);
         if(playerHealth > 0) {
           playerHealth--;
           deathCount++;
