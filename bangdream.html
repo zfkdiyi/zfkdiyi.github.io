@@ -4043,15 +4043,15 @@
       let finalScore = Math.floor(Math.max(0, killScore + bossScore + comboScore - deathPenalty + fullComboScore
         + playerRatioScore + bulletRatioScore + itemRatioScore + timeScore));
       if(currentLevel >= 3){
-        let level3Score = buffItemCount * 180 + normalItemCount * 25 + (isWin ? playerHealth * 20 : playerHealth)
+        let level3Score = buffItemCount * 180 + normalItemCount * 20 + (isWin ? playerHealth * 20 : playerHealth)
           + (isWin ? bossScore * 0.75 : bossScore * 0.1) + (isWin ? comboScore * 2 : 0) + fullComboScore * 5
           + shieldBearKillCount * 360 + bearKillCount * 12
           + itemRatioScore * 3 + bulletRatioScore * 6 + bearRatioScore * 4
           + (isWin ? maxPlayerAttack * 120 : (maxPlayerAttack > 6 ? maxPlayerAttack * 1 : 0))
           + (isWin ? playerAttackPower * 240 : (playerAttackPower > 6 ? playerAttackPower * 2 : 0));
 
-        let minusScore =  (isWin ? escapedBearCount * 270 : escapedBearCount * 2) + (isWin ? deathCount * 1350 : deathCount * 2)
-           + (isWin ? stunCount * 240 : stunCount * 2) + (isWin ? timeScore * 120 : 0);
+        let minusScore =  (isWin ? escapedBearCount * 270 : escapedBearCount * 20) + (isWin ? deathCount * 1250 : deathCount * 20)
+           + (isWin ? stunCount * 240 : stunCount * 30) + (isWin ? timeScore * 120 : 0);
         // 扣减分数不超过扣减前分数的90%，避免得分过低
         if(minusScore > (finalScore + level3Score) * 0.9) {
           minusScore = (finalScore + level3Score) * 0.9
