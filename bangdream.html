@@ -1567,7 +1567,6 @@
     let buffItemCount = 0; //玩家吃掉的增益物品数
     let normalItemCount = 0; //玩家吃掉的普通物品数
     let stunCount = 0; //玩家眩晕次数
-    let stoneCount = 0; //玩家摔倒次数
     let shieldBearKillCount = 0; //击杀护盾小熊数
     let maxPlayerAttack = 0; //玩家达到的最大攻击力
     let deathCount = 0;  // 阵亡次数
@@ -3025,7 +3024,6 @@
       buffItemCount = 0; //玩家吃掉的增益物品数
       normalItemCount = 0; //玩家吃掉的普通物品数
       stunCount = 0; //玩家眩晕次数
-      stoneCount = 0; //玩家摔倒次数
       shieldBearKillCount = 0; //击杀护盾小熊数
       maxPlayerAttack = 5; //玩家达到的最大攻击力
       deathCount = 0;  // 重置阵亡次数
@@ -3545,7 +3543,6 @@
                   playerStunned = false;
                   stunTimer = 0;
                 }
-                stoneCount++;
                 playerStoned = true;
                 playerBulletStreams = Math.ceil(playerBulletStreams / 2);
                 stoneTimer = 1500;
@@ -3840,14 +3837,11 @@
       // 显示游戏中的音乐控制按钮、暂停按钮
       document.getElementById('game-music-control').style.display = 'flex';
       document.getElementById('pause-button').style.display = 'flex';
-
-
       // 切换到战斗音乐（重新开始游戏时重置播放位置）
       if (battleMusic) {
         battleMusic.currentTime = 0;
         playMusic('battle');
       }
-
       lastTime = performance.now();  // 记录开始时间
       if (gameLoopId) cancelAnimationFrame(gameLoopId);  // 取消上一个游戏循环
       gameLoop(lastTime);  // 开始游戏循环
@@ -3885,7 +3879,6 @@
       init();
       gameState = 'over';  // 设置游戏状态为结束
       if (gameLoopId) cancelAnimationFrame(gameLoopId);  // 停止游戏循环
-
       // 隐藏游戏中的音乐控制按钮
       document.getElementById('game-music-control').style.display = 'none';
       document.getElementById('pause-button').style.display = 'none';
@@ -3913,7 +3906,6 @@
       const iconSize = 24;
       const noteSize = 16;
       ctx.textAlign = 'left';
-
       // 第一行：生命值（红心图标）- 显示当前生命值和失去生命值
       ctx.fillStyle = '#ff69b4'; // 粉色
       ctx.strokeText('❤️', 10, 62); // 红心emoji图标
@@ -4029,8 +4021,6 @@
       playMusic('end');
       cancelAnimationFrame(gameLoopId);  // 停止游戏循环
       const gameTime = performance.now() - gameStartTime;
-      // 隐藏游戏中的音乐控制按钮
-      // document.getElementById('game-music-control').style.display = 'none';
 
       // 计算最终得分
       const killScore = Math.max(0, (bearKillCount - escapedBearCount) * 20);
@@ -4053,15 +4043,15 @@
       let finalScore = Math.floor(Math.max(0, killScore + bossScore + comboScore - deathPenalty + fullComboScore
         + playerRatioScore + bulletRatioScore + itemRatioScore + timeScore));
       if(currentLevel >= 3){
-        let level3Score = (isWin ? buffItemCount * 160 : buffItemCount * 12) + normalItemCount * 30 + (isWin ? playerHealth * 20 : playerHealth)
+        let level3Score = buffItemCount * 180 + normalItemCount * 25 + (isWin ? playerHealth * 20 : playerHealth)
           + (isWin ? bossScore * 0.75 : bossScore * 0.1) + (isWin ? comboScore * 2 : 0) + fullComboScore * 5
           + shieldBearKillCount * 360 + bearKillCount * 12
-          + itemRatioScore * 4 + bulletRatioScore * 4 + bearRatioScore * 4
+          + itemRatioScore * 3 + bulletRatioScore * 6 + bearRatioScore * 4
           + (isWin ? maxPlayerAttack * 120 : (maxPlayerAttack > 6 ? maxPlayerAttack * 1 : 0))
           + (isWin ? playerAttackPower * 240 : (playerAttackPower > 6 ? playerAttackPower * 2 : 0));
 
-        let minusScore =  (isWin ? escapedBearCount * 250 : escapedBearCount * 2) + (isWin ? deathCount * 1250 : deathCount * 50)
-           + (isWin ? stunCount * 150 : stunCount * 2) + (isWin ? stoneCount * 200 : stoneCount * 2) + (isWin ? timeScore * 120 : 0);
+        let minusScore =  (isWin ? escapedBearCount * 270 : escapedBearCount * 2) + (isWin ? deathCount * 1350 : deathCount * 2)
+           + (isWin ? stunCount * 240 : stunCount * 2) + (isWin ? timeScore * 120 : 0);
         // 扣减分数不超过扣减前分数的90%，避免得分过低
         if(minusScore > (finalScore + level3Score) * 0.9) {
           minusScore = (finalScore + level3Score) * 0.9
